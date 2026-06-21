@@ -1,5 +1,7 @@
 # Airlines Alt-Data Nowcast (TSA → carrier RPMs)
 
+[![CI](https://github.com/david984-code/Airlines-Alt-Data-Nowcast/actions/workflows/ci.yml/badge.svg)](https://github.com/david984-code/Airlines-Alt-Data-Nowcast/actions/workflows/ci.yml)
+
 A consumer-sector **subsector reader** for the Consumer L/S book: nowcast US
 airlines' reported traffic (Revenue Passenger Miles) from **TSA daily checkpoint
 throughput** — near-ground-truth for US air travel, available ~6 weeks before
