@@ -104,5 +104,18 @@ uv run python -m src.nowcast           # TSA -> RPM bridge tests
 5. ✅ Fixed exhibit picker (was grabbing presentation decks) → recovered AAL to
       2026Q1 and **corrected Delta** (the earlier DAL "null" was that data bug).
       ⬜ Still: UAL post-2022 + ALK RPM label.
-6. ⬜ Test load-factor / enplaned-passengers as alternative targets; quality gate
-      (ruff + mypy + pytest), uv.lock, CI — mirror the gig reader.
+6. ✅ Quality gate (ruff + mypy + pytest, uv.lock, CI) mirroring the gig reader.
+      ⬜ Still: load-factor / enplaned-passengers as alternative targets.
+
+## Part of a series
+
+A free-data **consumer subsector reader** built to a consistent honest-numbers bar
+(validated signals + openly-reported nulls + a ruff/mypy/pytest CI gate):
+
+- **Airlines (this repo)** — TSA throughput → carrier RPM growth (OOS r≈0.93–0.97).
+- [Consumer-Gig-Nowcast](https://github.com/david984-code/Consumer-Gig-Nowcast)
+  — NYC TLC trips → Uber Mobility GB growth (OOS r≈0.98).
+
+Recurring finding across both: free alt-data excels at *nowcasting the print* as a
+conviction input, while systematic tradeable pairs keep coming up empty — reported
+honestly rather than dressed up.
