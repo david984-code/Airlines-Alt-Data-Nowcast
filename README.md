@@ -119,6 +119,9 @@ A free-data **consumer subsector reader** built to a consistent honest-numbers b
   — TSA / BLS / Trends → hotel-franchisor demand (MAR/HLT/H).
 - [Macau-Gaming-Nowcast](https://github.com/david984-code/Macau-Gaming-Nowcast)
   — Macau GGR → casino operator revenue.
+- **→ [Consumer-LS-Book](https://github.com/david984-code/Consumer-LS-Book)** — the
+  market-neutral long/short book these readers feed (demand + valuation sizing,
+  concentration caps, beta hedge, honest walk-forward test).
 
 Recurring finding across both: free alt-data excels at *nowcasting the print* as a
 conviction input, while systematic tradeable pairs keep coming up empty — reported
