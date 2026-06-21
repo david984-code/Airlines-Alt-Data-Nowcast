@@ -26,6 +26,22 @@ match the signal's coverage to the metric's coverage.
 > Two defended legs (LUV, JBLU) and a clean relative-value hook: a domestic
 > carrier's RPM growth *minus* the TSA-implied baseline is a share signal.
 
+### Out-of-sample confirmation (`src/walkforward.py`)
+
+Rolling-origin, expanding window, no look-ahead (deseasonalization *and* the
+TSA→RPM regression re-fit on the training window each step). Run full-window and
+**ex-COVID** (test = normal-times) — the contrast exposes COVID-carried fits:
+
+| Carrier | OOS r (full) | OOS r (ex-COVID) | ex-COVID hit | verdict |
+|---|---|---|---|---|
+| **LUV** | +0.98 | **+0.93** | 82% | **holds** |
+| **JBLU** | +0.98 | **+0.97** | 100% | **holds** |
+| DAL | +0.97 | **−0.42** | 33% | COVID artifact — fails |
+
+LUV and JBLU hold under every cut. Delta's full-window fit was the 2020–21
+recovery; strip COVID and it's *worse than no-skill* — the international RPMs TSA
+can't see dominate Delta's normal-times variation.
+
 ## What's built
 
 ```
@@ -55,8 +71,8 @@ uv run python -m src.nowcast           # TSA -> RPM bridge tests
 
 1. ✅ TSA fetcher + carrier KPI extraction (triangulation-verified) + bridge.
 2. ✅ **Signal found:** TSA → domestic-carrier RPMs (LUV r=0.96, JBLU r=0.97).
-3. ⬜ Walk-forward / rolling-origin OOS validation (no look-ahead), like the gig
-      reader — to confirm the in-sample r holds before it sizes anything.
+3. ✅ Walk-forward OOS (`walkforward.py`): LUV r=+0.93, JBLU r=+0.97 ex-COVID
+      (hold); DAL fails ex-COVID (−0.42) — its full-window fit was COVID-recovery.
 4. ⬜ **Relative-value signal:** carrier RPM growth − TSA-implied baseline → the
       within-subsector pair (long the share-gainer, short the laggard).
 5. ⬜ Recover AAL (post-2017) and UAL (post-2022) press-release formats.
