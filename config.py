@@ -41,4 +41,5 @@ CARRIERS: dict[str, int] = {
     "JBLU": 1158463,  # JetBlue
 }
 
-SEC_UA = os.environ.get("SEC_UA", "David Shaltakoff research dns817@gmail.com")
+# SEC asks for a declared User-Agent with contact info; set SEC_UA in your .env.
+SEC_UA = os.environ.get("SEC_UA", "airlines-alt-data-nowcast research (set SEC_UA)")
