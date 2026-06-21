@@ -16,31 +16,40 @@ robustness, lag-0 contemporaneous headline).
 | TSA → DAL (Delta) RPMs | −0.01 | [−0.22, +0.48] | 18 | no signal |
 | TSA → industry RPMs (core 4) | +0.27 | [+0.02, +0.72] | 18 | weak |
 
-**The story — and the analog to the gig reader:** TSA only sees *US* throughput,
-so it nowcasts **domestic-heavy carriers** strongly (Southwest ~100% domestic,
-JetBlue mostly domestic) but **fails for international-mix carriers** (Delta ~30%+
-international RPMs that TSA can't observe). That's the same shape as
-NYC-trips → Uber *Mobility* (works) vs *total* trips diluted by Eats (fails):
-match the signal's coverage to the metric's coverage.
+**The story:** TSA sees US throughput and nowcasts **all the carriers' RPMs**
+ex-COVID — strongest for domestic-pure carriers (Southwest, JetBlue), a bit weaker
+for Delta, whose ~30% international RPMs TSA can't see and which therefore add
+noise (not enough to null it). In-sample ex-COVID, lag 0:
 
-> Two defended legs (LUV, JBLU) and a clean relative-value hook: a domestic
-> carrier's RPM growth *minus* the TSA-implied baseline is a share signal.
+| Carrier | r | 95% CI | n |
+|---|---|---|---|
+| **JBLU** (domestic-heavy) | +0.97 | [+0.88, +0.99] | 20 |
+| **LUV** (Southwest, ~100% domestic) | +0.96 | [+0.85, +0.98] | 20 |
+| DAL (Delta, ~30% intl) | +0.92 | [+0.78, +0.97] | 16 |
+| Industry aggregate (core 4) | +0.97 | [+0.90, +0.99] | 16 |
+
+> **Honest-numbers note (a bug we caught):** an earlier version reported Delta as
+> a *null* and called it "international dilution." That was a **data error** — the
+> exhibit picker was grabbing Delta's earnings *presentation deck* instead of the
+> press release, corrupting its RPM series. After fixing the picker (`_press_release_url`),
+> Delta holds. The dilution effect is real but *partial* (Delta is the weakest
+> leg), not a kill. Re-running after the data fix overturned the wrong conclusion.
 
 ### Out-of-sample confirmation (`src/walkforward.py`)
 
 Rolling-origin, expanding window, no look-ahead (deseasonalization *and* the
-TSA→RPM regression re-fit on the training window each step). Run full-window and
-**ex-COVID** (test = normal-times) — the contrast exposes COVID-carried fits:
+TSA→RPM regression re-fit on the training window each step), full-window and
+ex-COVID:
 
 | Carrier | OOS r (full) | OOS r (ex-COVID) | ex-COVID hit | verdict |
 |---|---|---|---|---|
-| **LUV** | +0.98 | **+0.93** | 82% | **holds** |
-| **JBLU** | +0.98 | **+0.97** | 100% | **holds** |
-| DAL | +0.97 | **−0.42** | 33% | COVID artifact — fails |
+| **LUV** | +0.98 | **+0.93** | 82% | holds |
+| **JBLU** | +0.98 | **+0.97** | 100% | holds |
+| DAL | +1.00 | +0.49 (n=7) | 57% | holds, weakest |
 
-LUV and JBLU hold under every cut. Delta's full-window fit was the 2020–21
-recovery; strip COVID and it's *worse than no-skill* — the international RPMs TSA
-can't see dominate Delta's normal-times variation.
+LUV/JBLU hold strongly under every cut. Delta holds too but is the weakest leg
+(ex-COVID OOS r=+0.49 on only 7 quarters) — consistent with international RPMs
+adding TSA-invisible noise.
 
 ### Relative-value / share signal (`src/relative_value.py`) — honest null
 
@@ -63,12 +72,14 @@ src/data/kpi_edgar.py      # carrier traffic KPIs from EDGAR + triangulation ver
 src/data/cache.py, net.py  # CSV cache + retry/backoff
 src/analysis.py            # TSA quarterly, carrier/industry quarterly
 src/nowcast.py             # deseasonalized-growth bridge + block-bootstrap CI
-data/kpi_ground_truth.csv  # 930 verified rows (RPM/ASM/load factor/enplaned)
+src/walkforward.py         # rolling-origin OOS validation (no look-ahead)
+src/relative_value.py      # carrier-vs-TSA share residual + persistence test
+data/kpi_ground_truth.csv  # 1,187 verified rows (RPM/ASM/load factor/enplaned)
 ```
 
-KPI coverage: LUV 2005Q2→2026Q1, JBLU 2003Q3→2026Q1, ALK 2003Q4→2026Q1,
-DAL 2018Q1→2026Q1 (all current). AAL stops 2017Q2 and UAL 2022Q4 — their press
-releases changed format; recovering them is a known next step.
+KPI RPM coverage (all current): LUV 2005Q2→, JBLU 2003Q3→, DAL 2006Q1→,
+AAL 2013Q2→. UAL stops 2022Q4 and ALK reports RPMs under a non-matching label —
+both fixable label issues, a known next step.
 
 ## Run
 
@@ -84,10 +95,12 @@ uv run python -m src.nowcast           # TSA -> RPM bridge tests
 1. ✅ TSA fetcher + carrier KPI extraction (triangulation-verified) + bridge.
 2. ✅ **Signal found:** TSA → domestic-carrier RPMs (LUV r=0.96, JBLU r=0.97).
 3. ✅ Walk-forward OOS (`walkforward.py`): LUV r=+0.93, JBLU r=+0.97 ex-COVID
-      (hold); DAL fails ex-COVID (−0.42) — its full-window fit was COVID-recovery.
+      hold; DAL holds but weakest (OOS +0.49, n=7).
 4. ✅ Relative-value share signal (`relative_value.py`): residuals **mean-revert**
       (autocorr −0.52) — momentum pair fails; needs more carriers + stock-return
       link before a contrarian pair is claimable.
-5. ⬜ Recover AAL (post-2017) and UAL (post-2022) press-release formats.
+5. ✅ Fixed exhibit picker (was grabbing presentation decks) → recovered AAL to
+      2026Q1 and **corrected Delta** (the earlier DAL "null" was that data bug).
+      ⬜ Still: UAL post-2022 + ALK RPM label.
 6. ⬜ Test load-factor / enplaned-passengers as alternative targets; quality gate
       (ruff + mypy + pytest), uv.lock, CI — mirror the gig reader.

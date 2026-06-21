@@ -93,14 +93,19 @@ def _period_from_date(filing_date: str) -> str:
 
 
 def _press_release_url(cik: int, acc: str, cover_doc: str) -> str | None:
-    """The press-release exhibit = largest .htm that isn't the cover or XBRL."""
+    """The press-release exhibit = largest .htm that isn't the cover, XBRL, or deck.
+
+    The cover is excluded via ``cover_doc``; we also skip obvious cover/wrapper
+    docs ("form8...") and slide decks ("presentation"). We must NOT skip on a bare
+    "8k" substring -- real press releases are named like "a8kerexhibit991...".
+    """
     idx = _get(f"{_A}/{cik}/{acc}/index.json").json()["directory"]["item"]
     best, best_size = None, -1
     for it in idx:
         low = it["name"].lower()
         if not low.endswith(".htm") or low.startswith("r") or it["name"] == cover_doc:
             continue
-        if "8-k" in low or "8k" in low or "form8" in low:
+        if "form8" in low or "presentation" in low:
             continue
         if (size := int(it.get("size", 0))) > best_size:
             best, best_size = it["name"], size
