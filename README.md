@@ -115,6 +115,8 @@ A free-data **consumer subsector reader** built to a consistent honest-numbers b
 - **Airlines (this repo)** — TSA throughput → carrier RPM growth (OOS r≈0.93–0.97).
 - [Consumer-Gig-Nowcast](https://github.com/david984-code/Consumer-Gig-Nowcast)
   — NYC TLC trips → Uber Mobility GB growth (OOS r≈0.98).
+- [Hospitality-Alt-Data-Dashboard](https://github.com/david984-code/hospitality-alt-data-dashboard)
+  — TSA / BLS / Trends → hotel-franchisor demand (MAR/HLT/H).
 
 Recurring finding across both: free alt-data excels at *nowcasting the print* as a
 conviction input, while systematic tradeable pairs keep coming up empty — reported
