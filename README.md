@@ -117,6 +117,8 @@ A free-data **consumer subsector reader** built to a consistent honest-numbers b
   — NYC TLC trips → Uber Mobility GB growth (OOS r≈0.98).
 - [Hospitality-Alt-Data-Dashboard](https://github.com/david984-code/hospitality-alt-data-dashboard)
   — TSA / BLS / Trends → hotel-franchisor demand (MAR/HLT/H).
+- [Macau-Gaming-Nowcast](https://github.com/david984-code/Macau-Gaming-Nowcast)
+  — Macau GGR → casino operator revenue.
 
 Recurring finding across both: free alt-data excels at *nowcasting the print* as a
 conviction input, while systematic tradeable pairs keep coming up empty — reported
