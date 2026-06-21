@@ -42,6 +42,18 @@ LUV and JBLU hold under every cut. Delta's full-window fit was the 2020–21
 recovery; strip COVID and it's *worse than no-skill* — the international RPMs TSA
 can't see dominate Delta's normal-times variation.
 
+### Relative-value / share signal (`src/relative_value.py`) — honest null
+
+A carrier's RPM growth minus its TSA-implied baseline is its idiosyncratic
+*share* move. The pair thesis (long the share-gainer, short the laggard) needs the
+residual to **persist**. It doesn't: pooled lag-1 autocorrelation is **−0.52**
+(CI [−0.71, −0.29]) — share **mean-reverts**, so a momentum pair *loses*
+(next-quarter spread t=−4.26, 10% hit). The sign says a *contrarian* pair is the
+right direction, but only LUV+JBLU clear the data threshold — far too thin to
+claim. **Verdict: traffic share is mean-reverting, not trending; a real
+cross-sectional pair needs more domestic carriers** (recover AAL/UAL/ALK) and a
+link to relative *stock* returns. The nowcast legs (LUV, JBLU) stand on their own.
+
 ## What's built
 
 ```
@@ -73,8 +85,9 @@ uv run python -m src.nowcast           # TSA -> RPM bridge tests
 2. ✅ **Signal found:** TSA → domestic-carrier RPMs (LUV r=0.96, JBLU r=0.97).
 3. ✅ Walk-forward OOS (`walkforward.py`): LUV r=+0.93, JBLU r=+0.97 ex-COVID
       (hold); DAL fails ex-COVID (−0.42) — its full-window fit was COVID-recovery.
-4. ⬜ **Relative-value signal:** carrier RPM growth − TSA-implied baseline → the
-      within-subsector pair (long the share-gainer, short the laggard).
+4. ✅ Relative-value share signal (`relative_value.py`): residuals **mean-revert**
+      (autocorr −0.52) — momentum pair fails; needs more carriers + stock-return
+      link before a contrarian pair is claimable.
 5. ⬜ Recover AAL (post-2017) and UAL (post-2022) press-release formats.
 6. ⬜ Test load-factor / enplaned-passengers as alternative targets; quality gate
       (ruff + mypy + pytest), uv.lock, CI — mirror the gig reader.
