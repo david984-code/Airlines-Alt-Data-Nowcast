@@ -1,0 +1,35 @@
+[project]
+name = "airlines-alt-data-nowcast"
+version = "0.1.0"
+description = "TSA-throughput nowcast of US airline traffic (RPMs) — a consumer L/S subsector reader"
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "requests>=2.32",
+    "tenacity>=8.2",
+    "python-dotenv>=1.0",
+    "lxml>=5.0",
+    "beautifulsoup4>=4.12",
+]
+
+[dependency-groups]
+dev = ["ruff>=0.6", "mypy>=1.10", "pytest>=8.0"]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+disable_error_code = ["operator", "call-overload", "import-untyped"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

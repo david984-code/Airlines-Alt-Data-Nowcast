@@ -1,0 +1,17 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Generated artifacts + reproducible caches (kept out of the repo).
+# Exception: data/kpi_ground_truth.csv is the curated, verified prediction
+# target -- expensive to regenerate (many EDGAR hits) -- so it stays tracked.
+outputs/
+data/tsa_throughput.csv
+data/edgar_releases.json
+*.parquet
+*.pkl
+*.db

@@ -1,0 +1,7 @@
+pandas>=2.2
+numpy>=1.26
+requests>=2.32
+tenacity>=8.2
+python-dotenv>=1.0
+lxml>=5.0
+beautifulsoup4>=4.12
