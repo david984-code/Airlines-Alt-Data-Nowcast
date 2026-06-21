@@ -31,19 +31,10 @@ def _deseason_growth(s: pd.Series, train_n: int) -> pd.Series:
     return pd.Series(np.diff(y - dummies @ beta[2:]), index=s.index[1:])
 
 
-def walk_forward(
-    carrier: str, metric: str = "revenue_passenger_miles", since: str | None = None
-) -> dict:
-    tsa = tsa_quarterly()
-    rpm = reported_quarterly(metric)[carrier].dropna()
-    common = tsa.index.intersection(rpm.index)
-    if since:  # restrict the WHOLE series so training is also post-COVID
-        common = common[common >= since]
-    tsa, rpm = tsa.loc[common], rpm.loc[common]
-    n = len(common)
-
+def _oos_series(tsa: pd.Series, rpm: pd.Series) -> tuple[np.ndarray, ...]:
+    """Point-in-time (pred, actual, baseline) growth per testable quarter."""
     preds, actuals, baselines = [], [], []
-    for t in range(_MIN_TRAIN, n):
+    for t in range(_MIN_TRAIN, len(tsa)):
         gs = _deseason_growth(tsa.iloc[: t + 1], t)
         gr = _deseason_growth(rpm.iloc[: t + 1], t)
         train = pd.DataFrame({"s": gs, "r": gr}).iloc[: t - 1].dropna()
@@ -53,10 +44,20 @@ def walk_forward(
         preds.append(a + b * gs.iloc[t - 1])
         actuals.append(gr.iloc[t - 1])
         baselines.append(train["r"].mean())
+    return np.array(preds), np.array(actuals), np.array(baselines)
 
-    preds, actuals, baselines = map(np.array, (preds, actuals, baselines))
+
+def walk_forward(
+    carrier: str, metric: str = "revenue_passenger_miles", since: str | None = None
+) -> dict:
+    tsa = tsa_quarterly()
+    rpm = reported_quarterly(metric)[carrier].dropna()
+    common = tsa.index.intersection(rpm.index)
+    if since:  # restrict the WHOLE series so training is also post-COVID
+        common = common[common >= since]
+    preds, actuals, baselines = _oos_series(tsa.loc[common], rpm.loc[common])
     if len(preds) < 5:
-        return {"carrier": carrier, "n_test": int(len(preds))}
+        return {"carrier": carrier, "since": since, "n_test": int(len(preds))}
     rmse_m = float(np.sqrt(np.mean((actuals - preds) ** 2)))
     rmse_b = float(np.sqrt(np.mean((actuals - baselines) ** 2)))
     return {

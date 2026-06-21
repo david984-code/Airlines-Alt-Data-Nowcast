@@ -90,33 +90,31 @@ def _rank_pair_test(res: pd.DataFrame) -> dict:
     }
 
 
-def run() -> dict:
-    res = residuals()
-    pers = _persistence(res)
-    pair = _rank_pair_test(res)
+def _report(res: pd.DataFrame, pers: dict, pair: dict) -> None:
     print("Airline relative-value (share residual vs TSA baseline, ex-COVID)")
     print("=" * 64)
     span = f"{res.index.min()}..{res.index.max()}" if len(res) else "n/a"
+    latest = {c: round(res[c].dropna().iloc[-1], 3) for c in res.columns}
     print(f"  carriers: {list(res.columns)}, {len(res)} quarters {span}")
-    print(
-        f"  latest share residual (most recent q): "
-        f"{ {c: round(res[c].dropna().iloc[-1], 3) for c in res.columns} }"
-    )
+    print(f"  latest share residual (most recent q): {latest}")
     print(
         f"  lag-1 autocorr (share momentum): {pers['lag1_autocorr']:+.2f}  "
         f"CI[{pers['ci95'][0]:+.2f},{pers['ci95'][1]:+.2f}]  (n={pers['n_pairs']})"
     )
     if "mean_spread" in pair:
-        verdict = (
-            "persists -> tradeable lead"
-            if pair["hit_rate"] > 0.5 and pair["t_stat"] > 1
-            else "no usable persistence"
-        )
+        ok = pair["hit_rate"] > 0.5 and pair["t_stat"] > 1
+        verdict = "persists -> tradeable lead" if ok else "no usable persistence"
         print(
             f"  rank pair (long gainer/short laggard, next-q spread): "
             f"mean={pair['mean_spread']:+.3f}, hit={pair['hit_rate']:.0%}, "
             f"t={pair['t_stat']:+.2f} (n={pair['n']}) -> {verdict}"
         )
+
+
+def run() -> dict:
+    res = residuals()
+    pers, pair = _persistence(res), _rank_pair_test(res)
+    _report(res, pers, pair)
     out = {"persistence": pers, "rank_pair": pair}
     (config.OUTPUT_DIR / "relative_value.json").write_text(json.dumps(out, indent=2))
     return out
